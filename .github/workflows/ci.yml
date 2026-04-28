@@ -1,0 +1,50 @@
+name: Retail Platform CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install product service dependencies
+        run: |
+          cd product-service
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install inventory service dependencies
+        run: |
+          cd inventory-service
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validate product service syntax
+        run: |
+          python -m py_compile product-service/app.py
+
+      - name: Validate inventory service syntax
+        run: |
+          python -m py_compile inventory-service/app.py
+
+      - name: Build product Docker image
+        run: |
+          docker build -t retail-product-service-ci ./product-service
+
+      - name: Build inventory Docker image
+        run: |
+          docker build -t retail-inventory-service-ci ./inventory-service
