@@ -26,4 +26,4 @@ def get_inventory_by_product(product_id):
     return jsonify({"error": "Inventory not found"}), 404
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5001)
+    app.run(host="0.0.0.0", port=5000)
